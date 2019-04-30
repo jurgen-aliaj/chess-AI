@@ -2,6 +2,7 @@ package game;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import misc.Pair;
 
@@ -79,6 +80,21 @@ public abstract class Piece implements Serializable {
      * @return list of moves
      */
     public abstract ArrayList<Position> getPossibleMoves();
+    
+    /**
+     * Returns a list of legal moves for this piece. Converts the format
+     * of the moves to <Position, Position>. I.e. the move (e2, e4) means
+     * move the piece on e2 to e4.
+     * 
+     * @return list of moves
+     */
+	public ArrayList<Pair<Position,Position>> getLegalMoves() {
+		return (ArrayList<Pair<Position,Position>>) getPossibleMoves()
+				.stream()
+				.filter(x -> isValidMove(x))
+				.map(x -> new Pair<Position,Position>(curPos, x))
+				.collect(Collectors.toList());
+	}
 
     /**
      * Whether or not the move to the new position results in a valid capture.
@@ -173,6 +189,89 @@ public abstract class Piece implements Serializable {
         } else if (captured != null) {
         	newPos.setPiece(captured);
         }
+    }
+    
+    /**
+     * Finds all possible moves along the diagonals.
+     * This method will be useful for the bishop and the queen.
+     * 
+     * @param moves - the set of moves to add to
+     */
+    public void addDiagonalMoves(ArrayList<Position> moves) {
+    	int row = curPos.getRow();
+		int col = curPos.getCol();
+		
+		// top left diagonal
+		for (int i = 0; i < Math.min(col, 7-row); i++) {
+			moves.add(game.board[row + i + 1][col - i - 1]);
+			if (game.board[row + i + 1][col - i - 1].isOccupied()) {
+				break;
+			}
+		}
+		// bottom left diagonal
+		for (int i = 0; i < Math.min(col, row); i++) {
+			moves.add(game.board[row - i - 1][col - i - 1]);
+			if (game.board[row - i - 1][col - i - 1].isOccupied()) {
+				break;
+			}
+		}
+		// bottom right diagonal
+		for (int i = 0; i < Math.min(7-col, row); i++) {
+			moves.add(game.board[row - i - 1][col + i + 1]);
+			if (game.board[row - i - 1][col + i + 1].isOccupied()) {
+				break;
+			}
+		} 
+		// top right diagonal
+		for (int i = 0; i < Math.min(7-col, 7-row); i++) {
+			moves.add(game.board[row + i + 1][col + i + 1]);
+			if (game.board[row + i + 1][col + i + 1].isOccupied()) {
+				break;
+			}
+		}
+    }
+    
+    /**
+     * Finds all possible moves along the files and ranks.
+     * This method will be useful for the rook and the queen.
+     * 
+     * @param moves - the set of moves to add to
+     */
+    public void addOrthogonalMoves(ArrayList<Position> moves) {
+    	int row = curPos.getRow();
+		int col = curPos.getCol();
+		
+		// upper file
+		for (int i = row+1; i < 8; i++) {
+			moves.add(game.board[i][col]);
+			if (game.board[i][col].isOccupied()) {
+				break;
+			}
+		}
+		
+		// lower file
+		for (int i = row-1; i >= 0; i--) {
+			moves.add(game.board[i][col]);
+			if (game.board[i][col].isOccupied()) {
+				break;
+			}
+		}
+		
+		// right rank
+		for (int i = col+1; i < 8; i++) {
+			moves.add(game.board[row][i]);
+			if (game.board[row][i].isOccupied()) {
+				break;
+			}
+		}
+		
+		// left rank
+		for (int i = col-1; i >= 0; i--) {
+			moves.add(game.board[row][i]);
+			if (game.board[row][i].isOccupied()) {
+				break;
+			}
+		}
     }
 
     /**

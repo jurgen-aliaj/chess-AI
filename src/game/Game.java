@@ -145,23 +145,37 @@ public class Game implements Serializable {
     	@SuppressWarnings("unchecked")
 		ArrayList<Piece> piecesCopy = (ArrayList<Piece>) pieces.clone();
     	Piece p = null;
-    	ArrayList<Position> moves = null;
-    	boolean valid = false, sameColor = false;
         for (int i = 0; i < pieces.size(); i++) {
         	p = piecesCopy.get(i);
-        	sameColor = p.getColor() == color;
-        	if (!sameColor) {
+        	if (p.getColor() != color) {
             	continue;
             }
-        	moves = p.getPossibleMoves();
-        	for (Position move : moves) {
-        		valid = p.isValidMove(move);
-        		if (valid) {
-                    return false;
-                }
+        	if (!p.getLegalMoves().isEmpty()) {
+        		return false;
         	}
         }
         return true;
+    }
+    
+    /**
+     * Get all possible moves
+     *
+     * @return list of legal moves
+     */
+	@SuppressWarnings("unchecked")
+	public ArrayList<Pair<Position,Position>> getLegalMoves() {
+		ArrayList<Piece> piecesCopy = (ArrayList<Piece>) pieces.clone();
+    	Piece p = null;
+    	ArrayList<Pair<Position,Position>> legalMoves = new ArrayList<Pair<Position,Position>>();
+        for (int i = 0; i < pieces.size(); i++) {
+        	p = piecesCopy.get(i);
+        	if (p.getColor() != currentTurn) {
+            	continue;
+            }
+        	// p.getLegalMoves() could be null which leads to problems
+        	Optional.ofNullable(p.getLegalMoves()).ifPresent(legalMoves::addAll);
+        }
+        return legalMoves;
     }
     
     /**
@@ -196,39 +210,6 @@ public class Game implements Serializable {
             insufficient = p instanceof Knight || p instanceof Bishop;
         }
         return pieces.size() == 2 || (pieces.size() == 3 && insufficient);
-    }
-    
-    /**
-     * Get all possible moves
-     *
-     * @return list of legal moves
-     */
-    public ArrayList<Pair<Position,Position>> getLegalMoves() {
-    	@SuppressWarnings("unchecked")
-		ArrayList<Piece> piecesCopy = (ArrayList<Piece>) pieces.clone();
-    	Piece p = null;
-    	ArrayList<Position> candidateMoves = null;
-    	boolean valid = false, sameColor = false;
-    	ArrayList<Pair<Position,Position>> legalMoves = new ArrayList<Pair<Position,Position>>();
-        for (int i = 0; i < pieces.size(); i++) {
-        	p = piecesCopy.get(i);
-        	sameColor = p.getColor() == currentTurn;
-        	if (!sameColor) {
-            	continue;
-            }
-        	candidateMoves = p.getPossibleMoves();
-            for(Position move : candidateMoves) {
-                	valid = p.isValidMove(move);
-                    if (valid) {
-                    	Pair<Position,Position> pair = new Pair<Position, Position>(p.curPos, move);
-                    	if(pair == null || move == null) {
-                    		System.out.println("wtf");
-                    	}
-                    	legalMoves.add(pair);
-                    }
-            }
-        }
-        return legalMoves;
     }
     
     /**

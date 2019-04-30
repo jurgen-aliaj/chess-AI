@@ -81,17 +81,7 @@ public class Rook extends Piece {
 	public ArrayList<Position> getPossibleMoves() {
 		ArrayList<Position> moves = new ArrayList<Position>();
 		
-		int row = curPos.getRow();
-		int col = curPos.getCol();
-		
-		for (int i = 0; i < 8; i++) {
-			if (i != row) {
-				moves.add(game.board[i][col]);
-			}
-			if (i != col) {
-				moves.add(game.board[row][i]);
-			}
-		}
+		addOrthogonalMoves(moves);
 		
 		return moves;
 	}

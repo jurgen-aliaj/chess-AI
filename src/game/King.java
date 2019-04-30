@@ -137,6 +137,7 @@ public class King extends Piece {
     	int row = curPos.getRow();
     	int col = curPos.getCol();
     	
+    	// squares above and below king
     	for (int i = -1; i <= 1; i++) {
     		if (i + row < 0 || i + row > 7 || i == 0) {
     			continue;
@@ -144,6 +145,7 @@ public class King extends Piece {
     		moves.add(game.board[i+row][col]);
     	}
     	
+    	// right of king
     	for (int i = -1; i <= 1; i++) {
     		if (col == 7) {
     			break;
@@ -154,6 +156,7 @@ public class King extends Piece {
     		moves.add(game.board[i+row][col+1]);
     	}
     	
+    	// left of king
     	for (int i = -1; i <= 1; i++) {
     		if (col == 0) {
     			break;
@@ -164,9 +167,11 @@ public class King extends Piece {
     		moves.add(game.board[i+row][col-1]);
     	}
     	
+    	// short castle
     	if (col + 2 < 8) {
     		moves.add(game.board[row][col+2]);
     	}
+    	// long castle
     	if (col - 2 >= 0) {
     		moves.add(game.board[row][col-2]);
     	}

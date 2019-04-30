@@ -80,42 +80,7 @@ public class Bishop extends Piece {
 	public ArrayList<Position> getPossibleMoves() {
 		ArrayList<Position> moves = new ArrayList<Position>();
 		
-		int row = curPos.getRow();
-		int col = curPos.getCol();
-		
-		/*
-		 * Bishop moves
-		 */
-		
-		// top left diagonal
-		for (int i = 0; i < Math.min(col, 7-row); i++) {
-			moves.add(game.board[row + i + 1][col - i - 1]);
-		}
-		// bottom left diagonal
-		for (int i = 0; i < Math.min(col, row); i++) {
-			moves.add(game.board[row - i - 1][col - i - 1]);
-		}
-		// bottom right diagonal
-		for (int i = 0; i < Math.min(7-col, row); i++) {
-			moves.add(game.board[row - i - 1][col + i + 1]);
-		} 
-		// top right diagonal
-		for (int i = 0; i < Math.min(7-col, 7-row); i++) {
-			moves.add(game.board[row + i + 1][col + i + 1]);
-		}
-		
-		/*
-		 * Rook moves
-		 */
-		
-		for (int i = 0; i < 8; i++) {
-			if (i != row) {
-				moves.add(game.board[i][col]);
-			}
-			if (i != col) {
-				moves.add(game.board[row][i]);
-			}
-		}
+		addDiagonalMoves(moves);
 		
 		return moves;
 	}
